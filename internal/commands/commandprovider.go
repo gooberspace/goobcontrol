@@ -46,12 +46,12 @@ func init() {
 		Options: []discord.ApplicationCommandOption{
 			discord.ApplicationCommandOptionUser{
 				Name:        "member",
-				Description: "The member you would like to kick",
+				Description: "The member you would like to ban",
 				Required:    true,
 			},
 			discord.ApplicationCommandOptionString{
 				Name:        "reason",
-				Description: "reason for kicking the user",
+				Description: "reason for banning the user",
 				Required:    true,
 			},
 			discord.ApplicationCommandOptionString{
