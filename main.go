@@ -28,7 +28,7 @@ func init() {
 func main() {
 	// All this to set up some logging huh
 	logLevel := slog.LevelInfo
-	if *logDebug {
+	if *logDebug || os.Getenv("BOT_DEBUG") == "true" {
 		logLevel = slog.LevelDebug
 	}
 	slogOpts := &slog.HandlerOptions{
