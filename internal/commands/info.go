@@ -12,13 +12,13 @@ import (
 )
 
 var appStart time.Time
-var version string
+var version string = "localdevelopment"
 
 func init() {
 	appStart = time.Now()
 }
 
-func handleStats(event *events.ApplicationCommandInteractionCreate) {
+func handleInfo(event *events.ApplicationCommandInteractionCreate) {
 	var gatewayPing string
 	if event.Client().HasGateway() {
 		gatewayPing = event.Client().Gateway().Latency().String()

@@ -17,11 +17,11 @@ func HandleCommand(event *events.ApplicationCommandInteractionCreate) {
 func HandleSlashCommand(event *events.ApplicationCommandInteractionCreate) {
 	slog.Info("Slash command ran", "command", event.SlashCommandInteractionData().CommandName(), "username", event.User().Username, "userID", event.User().ID, "Options", event.SlashCommandInteractionData().Options)
 	switch event.ApplicationCommandInteraction.Data.CommandName() {
-	case "stats":
-		handleStats(event)
 	case "kick":
 		handleKick(event)
 	case "ban":
 		handleBan(event)
+	case "goob":
+		handleGoob(event)
 	}
 }

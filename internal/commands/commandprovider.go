@@ -15,9 +15,15 @@ var (
 )
 
 func init() {
-	var pingCommand = discord.SlashCommandCreate{
-		Name:        "stats",
-		Description: "Get runtime stats for the bot",
+	var goobCommand = discord.SlashCommandCreate{
+		Name:        "goob",
+		Description: "Goob Control utility commands",
+		Options: []discord.ApplicationCommandOption{
+			discord.ApplicationCommandOptionSubCommand{
+				Name:        "info",
+				Description: "Get info and runtime stats",
+			},
+		},
 	}
 
 	var kickCommand = discord.SlashCommandCreate{
@@ -63,7 +69,7 @@ func init() {
 	}
 
 	GlobalApplicationCommands = append(GlobalApplicationCommands,
-		pingCommand,
+		goobCommand,
 	)
 
 	PrivateApplicationCommands = append(PrivateApplicationCommands,
