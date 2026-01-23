@@ -12,6 +12,7 @@ import (
 )
 
 var appStart time.Time
+var version string
 
 func init() {
 	appStart = time.Now()
@@ -30,6 +31,7 @@ func handleStats(event *events.ApplicationCommandInteractionCreate) {
 	embed := discord.NewEmbedBuilder().
 		SetTitle("Bot Statistics").
 		AddField("Name", "Loading...", false).
+		AddField("Version", version, false).
 		AddField("REST Latency", "Loading...", false).
 		AddField("Gateway Latency", gatewayPing, false).
 		AddField("Started", appStart.Format("2006-01-02 15:04:05 MST"), false).
@@ -47,8 +49,8 @@ func handleStats(event *events.ApplicationCommandInteractionCreate) {
 		duration := time.Now().UnixNano() - start
 
 		embed.SetField(0, "Name", botInfo.Bot.Username, false)
-		embed.SetField(1, "REST Latency", time.Duration(duration).String(), false)
-		embed.SetField(6, "Guilds Joined", strconv.FormatInt(int64(*botInfo.ApproximateGuildCount), 10), false)
+		embed.SetField(2, "REST Latency", time.Duration(duration).String(), false)
+		embed.SetField(7, "Guilds Joined", strconv.FormatInt(int64(*botInfo.ApproximateGuildCount), 10), false)
 		if _, err := event.Client().Rest().UpdateInteractionResponse(event.ApplicationID(), event.Token(), discord.MessageUpdate{Embeds: &[]discord.Embed{embed.Build()}}); err != nil {
 			slog.Error("Failed to update ping embed: ", slog.Any("err", err))
 		}
