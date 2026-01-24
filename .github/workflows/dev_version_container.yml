@@ -41,7 +41,7 @@ jobs:
 
                 - name: Set up Docker Buildx
                   uses: docker/setup-buildx-action@v3
-                  
+
                 - name: Build and push Docker image
                   id: push
                   uses: docker/build-push-action@v6
@@ -50,5 +50,5 @@ jobs:
                     push: true
                     labels: ${{ steps.metadata.outputs.labels }}
                     tags: ${{ steps.metadata.outputs.tags }}
-                    cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:devbuildcache
-                    cache-to: type=registry,ref=${{ env.IMAGE_NAME }}:devbuildcache,mode=max
+                    cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:devbuildcache
+                    cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:devbuildcache,mode=max
