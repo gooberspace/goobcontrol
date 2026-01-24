@@ -33,8 +33,8 @@ func main() {
 	viper.SetConfigName("goobconfig")
 	viper.AddConfigPath(".")
 	if err := viper.ReadInConfig(); err != nil {
-		var configFileNotfoundError *viper.ConfigFileNotFoundError
-		if errors.As(err, configFileNotfoundError) {
+		var configFileNotfoundError viper.ConfigFileNotFoundError
+		if errors.As(err, &configFileNotfoundError) {
 			//Ignore these errors as we might be reading from env
 		} else {
 			panic("Couldn't load config file: " + err.Error())
