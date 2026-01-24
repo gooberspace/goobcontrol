@@ -2,11 +2,11 @@ package commands
 
 import (
 	"log/slog"
-	"os"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/gooberspace/goobcontrol/internal/common"
+	"github.com/spf13/viper"
 )
 
 func handleKick(event *events.ApplicationCommandInteractionCreate) {
@@ -32,7 +32,7 @@ func tryKickOrFail(event *events.ApplicationCommandInteractionCreate) *discord.E
 	if kickErr := event.Client().Rest().RemoveMember(*event.GuildID(), user.User.ID); kickErr != nil {
 		return discord.NewEmbedBuilder().
 			SetTitle("Error kicking member").
-			SetDescriptionf("Couldn't kick %s, check if the user is still in the server, if %s has enough permissions to kick them and if its role is above the targeted user", user.EffectiveName(), os.Getenv("BOT_NAME")).
+			SetDescriptionf("Couldn't kick %s, check if the user is still in the server, if %s has enough permissions to kick them and if its role is above the targeted user", user.EffectiveName(), viper.GetString("bot.name")).
 			SetColor(common.ColourError)
 	}
 

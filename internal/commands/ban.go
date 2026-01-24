@@ -2,12 +2,12 @@ package commands
 
 import (
 	"log/slog"
-	"os"
 	"time"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/gooberspace/goobcontrol/internal/common"
+	"github.com/spf13/viper"
 )
 
 func handleBan(event *events.ApplicationCommandInteractionCreate) {
@@ -50,7 +50,7 @@ func checkDurationValidityAndBan(event *events.ApplicationCommandInteractionCrea
 	if banErr := event.Client().Rest().AddBan(*event.GuildID(), user.User.ID, parsedDuration); banErr != nil {
 		return discord.NewEmbedBuilder().
 			SetTitle("Error banning member").
-			SetDescriptionf("Couldn't ban %s, check if the user is still in the server, if %s has enough permissions to ban them and if its role is above the targeted user.", user.EffectiveName(), os.Getenv("BOT_NAME")).
+			SetDescriptionf("Couldn't ban %s, check if the user is still in the server, if %s has enough permissions to ban them and if its role is above the targeted user.", user.EffectiveName(), viper.GetString("bot.name")).
 			SetColor(common.ColourError)
 	}
 

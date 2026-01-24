@@ -15,6 +15,7 @@ import (
 	"github.com/gooberspace/goobcontrol/internal/commands"
 	"github.com/gooberspace/goobcontrol/internal/eventhandlers"
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -26,9 +27,26 @@ func init() {
 }
 
 func main() {
+	viper.SetEnvPrefix("goob")
+	viper.SetTypeByDefaultValue(true)
+	viper.SetConfigName("goobconfig")
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		slog.Error("Error reading config", slog.Any("err", err))
+	}
+
+	viper.SetDefault("bot.name", "Goob Control")
+	viper.SetDefault("bot.debug", false)
+	viper.SetDefault("discord.privateGuilds", []string{})
+
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	viper.AutomaticEnv()
+
 	// All this to set up some logging huh
 	logLevel := slog.LevelInfo
-	if *logDebug || os.Getenv("BOT_DEBUG") == "true" {
+	if *logDebug || viper.GetString("bot.debug") == "true" {
 		logLevel = slog.LevelDebug
 	}
 	slogOpts := &slog.HandlerOptions{
@@ -39,8 +57,8 @@ func main() {
 
 	// Setting up a basic disgo client with some sane defaults
 	// We're doing all event handling elsewhere so this file can stay small
-	slog.Info("Starting the bot named " + os.Getenv("BOT_NAME"))
-	client, err := disgo.New(os.Getenv("BOT_DISCORD_TOKEN"),
+	slog.Info("Starting the bot named " + viper.GetString("bot.name"))
+	client, err := disgo.New(viper.GetString("discord.token"),
 		bot.WithGatewayConfigOpts(
 			gateway.WithIntents(
 				gateway.IntentGuilds,
@@ -58,7 +76,7 @@ func main() {
 	}
 
 	commands.RegisterCommands(client)
-	privateGuilds := strings.Split(os.Getenv("BOT_PRIVATE_GUILDS"), ",")
+	privateGuilds := viper.GetStringSlice("discord.privateGuilds")
 	commands.RegisterGuildCommands(client, privateGuilds)
 
 	s := make(chan os.Signal, 1)
