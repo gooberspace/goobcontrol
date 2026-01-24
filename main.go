@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"log/slog"
 	"os"
@@ -31,17 +32,18 @@ func main() {
 	viper.SetTypeByDefaultValue(true)
 	viper.SetConfigName("goobconfig")
 	viper.AddConfigPath(".")
-
 	if err := viper.ReadInConfig(); err != nil {
-		slog.Error("Error reading config", slog.Any("err", err))
+		var configFileNotfoundError *viper.ConfigFileNotFoundError
+		if errors.As(err, configFileNotfoundError) {
+			//Ignore these errors as we might be reading from env
+		} else {
+			panic("Couldn't load config file: " + err.Error())
+		}
 	}
-
 	viper.SetDefault("bot.name", "Goob Control")
 	viper.SetDefault("bot.debug", false)
 	viper.SetDefault("discord.privateGuilds", []string{})
-
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
 	viper.AutomaticEnv()
 
 	// All this to set up some logging huh
