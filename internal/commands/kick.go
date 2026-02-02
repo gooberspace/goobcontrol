@@ -5,13 +5,33 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
+	"github.com/disgoorg/json"
 	"github.com/gooberspace/goobcontrol/internal/common"
-	"github.com/spf13/viper"
+	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
 )
 
-func handleKick(event *events.ApplicationCommandInteractionCreate) {
+var KickCommand = discord.SlashCommandCreate{
+	Name:                     "kick",
+	Description:              "Kick a member",
+	DefaultMemberPermissions: json.NewNullablePtr(discord.PermissionAdministrator),
+	Contexts:                 []discord.InteractionContextType{discord.InteractionContextTypeGuild},
+	Options: []discord.ApplicationCommandOption{
+		discord.ApplicationCommandOptionUser{
+			Name:        "member",
+			Description: "The member you would like to kick",
+			Required:    true,
+		},
+		discord.ApplicationCommandOptionString{
+			Name:        "reason",
+			Description: "reason for kicking the user",
+			Required:    true,
+		},
+	},
+}
 
-	embed := tryKickOrFail(event)
+func handleKick(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) {
+
+	embed := tryKickOrFail(gc, event)
 
 	if err := event.CreateMessage(
 		discord.NewMessageCreateBuilder().AddEmbeds(embed.Build()).Build(),
@@ -21,7 +41,7 @@ func handleKick(event *events.ApplicationCommandInteractionCreate) {
 
 }
 
-func tryKickOrFail(event *events.ApplicationCommandInteractionCreate) *discord.EmbedBuilder {
+func tryKickOrFail(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) *discord.EmbedBuilder {
 	data := event.SlashCommandInteractionData()
 	user := data.Member("member")
 	reason, reasonSet := data.OptString("reason")
@@ -32,7 +52,7 @@ func tryKickOrFail(event *events.ApplicationCommandInteractionCreate) *discord.E
 	if kickErr := event.Client().Rest().RemoveMember(*event.GuildID(), user.User.ID); kickErr != nil {
 		return discord.NewEmbedBuilder().
 			SetTitle("Error kicking member").
-			SetDescriptionf("Couldn't kick %s, check if the user is still in the server, if %s has enough permissions to kick them and if its role is above the targeted user", user.EffectiveName(), viper.GetString("bot.name")).
+			SetDescriptionf("Couldn't kick %s, check if the user is still in the server, if %s has enough permissions to kick them and if its role is above the targeted user", user.EffectiveName(), gc.Config.GetString("bot.name")).
 			SetColor(common.ColourError)
 	}
 

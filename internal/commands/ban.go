@@ -6,14 +6,39 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
+	"github.com/disgoorg/json"
 	"github.com/gooberspace/goobcontrol/internal/common"
-	"github.com/spf13/viper"
+	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
 )
 
-func handleBan(event *events.ApplicationCommandInteractionCreate) {
+var BanCommand = discord.SlashCommandCreate{
+	Name:                     "ban",
+	Description:              "Ban a member",
+	DefaultMemberPermissions: json.NewNullablePtr(discord.PermissionAdministrator),
+	Contexts:                 []discord.InteractionContextType{discord.InteractionContextTypeGuild},
+	Options: []discord.ApplicationCommandOption{
+		discord.ApplicationCommandOptionUser{
+			Name:        "member",
+			Description: "The member you would like to ban",
+			Required:    true,
+		},
+		discord.ApplicationCommandOptionString{
+			Name:        "reason",
+			Description: "reason for banning the user",
+			Required:    true,
+		},
+		discord.ApplicationCommandOptionString{
+			Name:        "purge_duration",
+			Description: "purge last x duration of messages (ex. 1h, 24h, 1h30m max 168h)",
+			Required:    false,
+		},
+	},
+}
+
+func handleBan(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) {
 
 	// Handle ban and return embed
-	embed := checkDurationValidityAndBan(event)
+	embed := checkDurationValidityAndBan(gc, event)
 
 	if err := event.CreateMessage(
 		discord.NewMessageCreateBuilder().AddEmbeds(embed.Build()).Build(),
@@ -22,7 +47,7 @@ func handleBan(event *events.ApplicationCommandInteractionCreate) {
 	}
 }
 
-func checkDurationValidityAndBan(event *events.ApplicationCommandInteractionCreate) *discord.EmbedBuilder {
+func checkDurationValidityAndBan(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) *discord.EmbedBuilder {
 	data := event.SlashCommandInteractionData()
 	user := data.Member("member")
 	reason, reasonSet := data.OptString("reason")
@@ -50,7 +75,7 @@ func checkDurationValidityAndBan(event *events.ApplicationCommandInteractionCrea
 	if banErr := event.Client().Rest().AddBan(*event.GuildID(), user.User.ID, parsedDuration); banErr != nil {
 		return discord.NewEmbedBuilder().
 			SetTitle("Error banning member").
-			SetDescriptionf("Couldn't ban %s, check if the user is still in the server, if %s has enough permissions to ban them and if its role is above the targeted user.", user.EffectiveName(), viper.GetString("bot.name")).
+			SetDescriptionf("Couldn't ban %s, check if the user is still in the server, if %s has enough permissions to ban them and if its role is above the targeted user.", user.EffectiveName(), gc.Config.GetString("bot.name")).
 			SetColor(common.ColourError)
 	}
 
