@@ -5,23 +5,24 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
+	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
 )
 
-func HandleCommand(event *events.ApplicationCommandInteractionCreate) {
+func HandleCommand(gb *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) {
 	switch event.Data.Type() {
 	case discord.ApplicationCommandTypeSlash:
-		HandleSlashCommand(event)
+		handleSlashCommand(gb, event)
 	}
 }
 
-func HandleSlashCommand(event *events.ApplicationCommandInteractionCreate) {
+func handleSlashCommand(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) {
 	slog.Info("Slash command ran", "command", event.SlashCommandInteractionData().CommandName(), "username", event.User().Username, "userID", event.User().ID, "Options", event.SlashCommandInteractionData().Options)
 	switch event.ApplicationCommandInteraction.Data.CommandName() {
 	case "kick":
-		handleKick(event)
+		handleKick(gc, event)
 	case "ban":
-		handleBan(event)
+		handleBan(gc, event)
 	case "goob":
-		handleGoob(event)
+		handleGoob(gc, event)
 	}
 }

@@ -9,16 +9,16 @@ import (
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/rest"
+	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
 )
 
 var appStart time.Time
-var version string = "localdevelopment"
 
 func init() {
 	appStart = time.Now()
 }
 
-func handleInfo(event *events.ApplicationCommandInteractionCreate) {
+func handleInfo(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) {
 	var gatewayPing string
 	if event.Client().HasGateway() {
 		gatewayPing = event.Client().Gateway().Latency().String()
@@ -31,7 +31,7 @@ func handleInfo(event *events.ApplicationCommandInteractionCreate) {
 	embed := discord.NewEmbedBuilder().
 		SetTitle("Bot Statistics").
 		AddField("Name", "Loading...", false).
-		AddField("Version", version, false).
+		AddField("Version", gc.Version, false).
 		AddField("REST Latency", "Loading...", false).
 		AddField("Gateway Latency", gatewayPing, false).
 		AddField("Started", appStart.Format("2006-01-02 15:04:05 MST"), false).
