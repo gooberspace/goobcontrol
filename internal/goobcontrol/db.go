@@ -13,7 +13,11 @@ import (
 
 func SetupDatabase(config *viper.Viper) *bun.DB {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(
-		pgdriver.WithDSN(config.GetString("database.pgDsn")),
+		pgdriver.WithAddr(config.GetString("database.host")),
+		pgdriver.WithUser(config.GetString("database.user")),
+		pgdriver.WithPassword(config.GetString("database.password")),
+		pgdriver.WithDatabase(config.GetString("database.database")),
+		pgdriver.WithInsecure(config.GetBool("database.insecure")),
 	))
 
 	sqldb.SetMaxOpenConns(25)

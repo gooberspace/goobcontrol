@@ -24,6 +24,7 @@ func CreateConfig() *viper.Viper {
 	botConfig.SetDefault("bot.name", "Goob Control")
 	botConfig.SetDefault("bot.debug", false)
 	botConfig.SetDefault("discord.privateGuilds", []string{})
+	botConfig.SetDefault("database.insecure", false)
 	botConfig.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	botConfig.AutomaticEnv()
 	return botConfig
