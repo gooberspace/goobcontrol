@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,13 +25,16 @@ func init() {
 func main() {
 	config := goobcontrol.CreateConfig()
 	logger := goobcontrol.CreateLogger(config)
+	database := goobcontrol.SetupDatabase(config)
 	commandHandler := commands.HandleCommand
 
-	gb := goobcontrol.New(*logger, config, version, commandHandler)
+	gb := goobcontrol.New(*logger, config, version, commandHandler, database)
 
 	gb.Logger.Info("Starting the bot named " + gb.Config.GetString("bot.name"))
 
 	gb.SetupBot()
+
+	gb.TestDatabase()
 
 	// Setting up a basic disgo client with some sane defaults
 	// We're doing all event handling elsewhere so this file can stay small
@@ -53,6 +55,6 @@ func main() {
 	signal.Notify(s, syscall.SIGINT, syscall.SIGTERM)
 	<-s
 
-	slog.Info("Attempting graceful shutdown")
+	gb.Logger.Info("Attempting graceful shutdown")
 	gb.Client.Close(context.TODO())
 }

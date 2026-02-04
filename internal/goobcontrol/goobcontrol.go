@@ -13,14 +13,16 @@ import (
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/snowflake/v2"
 	"github.com/spf13/viper"
+	"github.com/uptrace/bun"
 )
 
-func New(logger slog.Logger, config *viper.Viper, version string, commandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate)) *GoobControl {
+func New(logger slog.Logger, config *viper.Viper, version string, commandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate), db *bun.DB) *GoobControl {
 	return &GoobControl{
 		Config:         config,
 		Logger:         logger,
 		Version:        version,
 		CommandHandler: commandHandler,
+		DB:             db,
 	}
 }
 
@@ -29,6 +31,7 @@ type GoobControl struct {
 	Logger         slog.Logger
 	Config         *viper.Viper
 	Version        string
+	DB             *bun.DB
 	CommandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate)
 }
 
@@ -67,13 +70,13 @@ func (gc *GoobControl) RegisterCommands(publicCommands []discord.ApplicationComm
 func (gc *GoobControl) HandleDiscordEvent(e bot.Event) {
 	switch e := e.(type) {
 	case *events.Ready:
-		botReadyMessage(e)
+		botReadyMessage(gc, e)
 	case *events.HeartbeatAck:
 		//do nothing
 	case *events.GuildReady:
 		//do nothing
 	case *events.GuildsReady:
-		guildsReadyMessage(e)
+		guildsReadyMessage(gc, e)
 	case *events.ApplicationCommandInteractionCreate:
 		gc.CommandHandler(gc, e)
 	default:
@@ -81,20 +84,20 @@ func (gc *GoobControl) HandleDiscordEvent(e bot.Event) {
 	}
 }
 
-func guildsReadyMessage(e *events.GuildsReady) {
+func guildsReadyMessage(gc *GoobControl, e *events.GuildsReady) {
 	guilds, error := e.Client().Rest().GetCurrentUserGuilds("", 0, 0, 10, false)
 	if error != nil {
-		slog.Error("Error getting guilds")
+		gc.Logger.Error("Error getting guilds")
 	} else {
-		slog.Info(
+		gc.Logger.Info(
 			"Guilds Ready",
 			"Guilds Connected", len(guilds),
 		)
 	}
 }
 
-func botReadyMessage(e *events.Ready) {
-	slog.Info(
+func botReadyMessage(gc *GoobControl, e *events.Ready) {
+	gc.Logger.Info(
 		"Bot connected",
 		"Username", e.User.Username,
 	)

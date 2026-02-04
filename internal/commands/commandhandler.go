@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"log/slog"
-
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
@@ -16,7 +14,7 @@ func HandleCommand(gb *goobcontrol.GoobControl, event *events.ApplicationCommand
 }
 
 func handleSlashCommand(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) {
-	slog.Info("Slash command ran", "command", event.SlashCommandInteractionData().CommandName(), "username", event.User().Username, "userID", event.User().ID, "Options", event.SlashCommandInteractionData().Options)
+	gc.Logger.Info("Slash command ran", "command", event.SlashCommandInteractionData().CommandName(), "username", event.User().Username, "userID", event.User().ID, "Options", event.SlashCommandInteractionData().Options)
 	switch event.ApplicationCommandInteraction.Data.CommandName() {
 	case "kick":
 		handleKick(gc, event)
