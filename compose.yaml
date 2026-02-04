@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: ${GOOB_POSTGRES_DB:-goobcontrol}
       POSTGRES_INSECURE: ${GOOB_POSTGRES_INSECURE:-true}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${GOOB_POSTGRES_USER:-goobcontrol}"]
       interval: 5s
       timeout: 5s
       retries: 5
