@@ -23,17 +23,18 @@ func main() {
 	database := goobcontrol.SetupDatabase(config)
 	commandHandler := commands.HandleCommand
 
-	gb := goobcontrol.New(*logger, config, version, commandHandler, database)
+	// This function creates a new instance of our bot with a shared logger, config, database etc.
+	gb := goobcontrol.New(logger, config, version, commandHandler, database)
 
 	gb.Logger.Info("Starting the bot named " + gb.Config.GetString("bot.name"))
 
+	// This function sets up the actual connection to Discord
 	gb.SetupBot()
 
 	gb.TestDatabase()
 
-	// Setting up a basic disgo client with some sane defaults
-	// We're doing all event handling elsewhere so this file can stay small
-
+	// Here we set the commands we want to register with the Discord API, the global commands work for everyone on every server
+	// while the private commands only work in Goober Space or my private servers
 	GlobalApplicationCommands = append(GlobalApplicationCommands,
 		commands.GoobCommand,
 	)

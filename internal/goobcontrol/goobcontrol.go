@@ -16,7 +16,7 @@ import (
 	"github.com/uptrace/bun"
 )
 
-func New(logger slog.Logger, config *viper.Viper, version string, commandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate), db *bun.DB) *GoobControl {
+func New(logger *slog.Logger, config *viper.Viper, version string, commandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate), db *bun.DB) *GoobControl {
 	return &GoobControl{
 		Config:         config,
 		Logger:         logger,
@@ -28,7 +28,7 @@ func New(logger slog.Logger, config *viper.Viper, version string, commandHandler
 
 type GoobControl struct {
 	Client         bot.Client
-	Logger         slog.Logger
+	Logger         *slog.Logger
 	Config         *viper.Viper
 	Version        string
 	DB             *bun.DB
