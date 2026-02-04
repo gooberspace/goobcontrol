@@ -4,9 +4,9 @@ COPY . ./
 RUN apk add --no-cache make git
 RUN make get-deps build-linux-amd64
 
-FROM alpine:latest AS release-stage
+FROM alpine:3 AS release-stage
 ARG USERNAME=goobcontrol
-RUN adduser -D ${USERNAME}
+RUN adduser -D "${USERNAME}"
 WORKDIR /app
 COPY --from=build-stage /workdir/bin/goobcontrol_linux_amd64 ./goobcontrol
 USER goobcontrol:goobcontrol

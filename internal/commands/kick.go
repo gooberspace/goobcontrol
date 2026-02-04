@@ -49,7 +49,7 @@ func tryKickOrFail(gc *goobcontrol.GoobControl, event *events.ApplicationCommand
 		reason = "n/a"
 	}
 
-	if kickErr := event.Client().Rest().RemoveMember(*event.GuildID(), user.User.ID); kickErr != nil {
+	if event.Client().Rest().RemoveMember(*event.GuildID(), user.User.ID) != nil {
 		return discord.NewEmbedBuilder().
 			SetTitle("Error kicking member").
 			SetDescriptionf("Couldn't kick %s, check if the user is still in the server, if %s has enough permissions to kick them and if its role is above the targeted user", user.EffectiveName(), gc.Config.GetString("bot.name")).

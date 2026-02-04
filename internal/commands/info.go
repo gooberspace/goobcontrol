@@ -25,19 +25,20 @@ func handleInfo(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInt
 	}
 
 	var m runtime.MemStats
+	const loadingText = "Loading..."
 
 	runtime.ReadMemStats(&m)
 
 	embed := discord.NewEmbedBuilder().
 		SetTitle("Bot Statistics").
-		AddField("Name", "Loading...", false).
+		AddField("Name", loadingText, false).
 		AddField("Version", gc.Version, false).
-		AddField("REST Latency", "Loading...", false).
+		AddField("REST Latency", loadingText, false).
 		AddField("Gateway Latency", gatewayPing, false).
 		AddField("Started", appStart.Format("2006-01-02 15:04:05 MST"), false).
 		AddField("Uptime", time.Since(appStart).Truncate(time.Second).String(), false).
 		AddField("Memory used", bToMB(m.Sys), false).
-		AddField("Guilds Joined", "Loading...", false)
+		AddField("Guilds Joined", loadingText, false)
 
 	defer func() {
 		var start int64

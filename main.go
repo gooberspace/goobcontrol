@@ -9,7 +9,6 @@ import (
 	"github.com/disgoorg/disgo/discord"
 	"github.com/gooberspace/goobcontrol/internal/commands"
 	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
-	_ "github.com/joho/godotenv/autoload"
 )
 
 var (
@@ -17,10 +16,6 @@ var (
 	GlobalApplicationCommands  []discord.ApplicationCommandCreate
 	PrivateApplicationCommands []discord.ApplicationCommandCreate
 )
-
-func init() {
-
-}
 
 func main() {
 	config := goobcontrol.CreateConfig()
