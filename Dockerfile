@@ -6,7 +6,7 @@ WORKDIR /workdir
 COPY . ./
 RUN apk add --no-cache make git
 RUN make get-deps build-linux-amd64
-RUN addgroup -S "${USERNAME}" \
+RUN addgroup -S ${USERNAME} \
     && adduser -S ${USERNAME} -G ${USERNAME}
 
 FROM scratch
