@@ -1,6 +1,6 @@
 module github.com/gooberspace/goobcontrol
 
-go 1.24.5
+go 1.26.0
 
 require (
 	github.com/disgoorg/disgo v0.18.16
