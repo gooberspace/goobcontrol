@@ -1,11 +1,18 @@
 package migrations
 
-import "github.com/uptrace/bun/migrate"
+import (
+	"embed"
 
-var Migrations = migrate.NewMigrations()
+	"github.com/uptrace/bun/migrate"
+)
+
+var Migrations = migrate.NewMigrations(migrate.WithMigrationsDirectory("/migrations"))
+
+//go:embed migrations/*
+var migrations embed.FS
 
 func init() {
-	if err := Migrations.DiscoverCaller(); err != nil {
+	if err := Migrations.Discover(migrations); err != nil {
 		panic(err)
 	}
 }

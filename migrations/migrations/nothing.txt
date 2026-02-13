@@ -1,0 +1,1 @@
+This file only exists to make the build stop complaining while there are no migrations

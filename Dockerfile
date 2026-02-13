@@ -11,6 +11,5 @@ COPY --from=alpine:latest /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build-stage /etc/passwd /etc/passwd
 USER goobcontrol
 COPY --from=build-stage /workdir/bin/goobcontrol_linux_amd64 /goobcontrol
-COPY --from=build-stage /workdir/migrations /migrations
 ENTRYPOINT ["/goobcontrol"]
 
