@@ -14,15 +14,17 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/migrate"
 )
 
-func New(logger *slog.Logger, config *viper.Viper, version string, commandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate), db *bun.DB) *GoobControl {
+func New(logger *slog.Logger, config *viper.Viper, version string, commandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate), db *bun.DB, dbMigrator *migrate.Migrator) *GoobControl {
 	return &GoobControl{
 		Config:         config,
 		Logger:         logger,
 		Version:        version,
 		CommandHandler: commandHandler,
 		DB:             db,
+		DbMigrator:     dbMigrator,
 	}
 }
 
@@ -33,6 +35,7 @@ type GoobControl struct {
 	Version        string
 	DB             *bun.DB
 	CommandHandler func(*GoobControl, *events.ApplicationCommandInteractionCreate)
+	DbMigrator     *migrate.Migrator
 }
 
 func (gc *GoobControl) SetupBot() {

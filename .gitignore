@@ -28,7 +28,12 @@ go.work.sum
 # env file
 .env
 
-goobconfig.*
 # Editor/IDE
 .idea/
 .vscode/
+
+# Goob Control Specific
+
+goobconfig.*
+goob-cli
+!cmd/goob-cli
