@@ -5,7 +5,7 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
-	"github.com/disgoorg/json"
+	"github.com/disgoorg/omit"
 	"github.com/gooberspace/goobcontrol/internal/common"
 	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
 )
@@ -13,7 +13,7 @@ import (
 var KickCommand = discord.SlashCommandCreate{
 	Name:                     "kick",
 	Description:              "Kick a member",
-	DefaultMemberPermissions: json.NewNullablePtr(discord.PermissionAdministrator),
+	DefaultMemberPermissions: omit.NewPtr(discord.PermissionAdministrator),
 	Contexts:                 []discord.InteractionContextType{discord.InteractionContextTypeGuild},
 	Options: []discord.ApplicationCommandOption{
 		discord.ApplicationCommandOptionUser{
@@ -34,7 +34,7 @@ func handleKick(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInt
 	embed := tryKickOrFail(gc, event)
 
 	if err := event.CreateMessage(
-		discord.NewMessageCreateBuilder().AddEmbeds(embed.Build()).Build(),
+		discord.NewMessageCreate().AddEmbeds(embed.Build()),
 	); err != nil {
 		slog.Error("Error responding to interaction", slog.Any("err", err))
 	}
@@ -49,7 +49,7 @@ func tryKickOrFail(gc *goobcontrol.GoobControl, event *events.ApplicationCommand
 		reason = "n/a"
 	}
 
-	if event.Client().Rest().RemoveMember(*event.GuildID(), user.User.ID) != nil {
+	if event.Client().Rest.RemoveMember(*event.GuildID(), user.User.ID) != nil {
 		return discord.NewEmbedBuilder().
 			SetTitle("Error kicking member").
 			SetDescriptionf("Couldn't kick %s, check if the user is still in the server, if %s has enough permissions to kick them and if its role is above the targeted user", user.EffectiveName(), gc.Config.GetString("bot.name")).

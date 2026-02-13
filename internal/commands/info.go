@@ -8,7 +8,6 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
-	"github.com/disgoorg/disgo/rest"
 	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
 )
 
@@ -21,7 +20,7 @@ func init() {
 func handleInfo(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInteractionCreate) {
 	var gatewayPing string
 	if event.Client().HasGateway() {
-		gatewayPing = event.Client().Gateway().Latency().String()
+		gatewayPing = event.Client().Gateway.Latency().String()
 	}
 
 	var m runtime.MemStats
@@ -44,20 +43,19 @@ func handleInfo(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInt
 		var start int64
 
 		//guilds, _ := event.Client().Rest().GetCurrentUserGuilds("", 0, 0, 0, false)
-		botInfo, _ := event.Client().Rest().GetBotApplicationInfo(func(config *rest.RequestConfig) {
-			start = time.Now().UnixNano()
-		})
+		start = time.Now().UnixNano()
+		botInfo, _ := event.Client().Rest.GetBotApplicationInfo()
 		duration := time.Now().UnixNano() - start
 
 		embed.SetField(0, "Name", botInfo.Bot.Username, false)
 		embed.SetField(2, "REST Latency", time.Duration(duration).String(), false)
 		embed.SetField(7, "Guilds Joined", strconv.FormatInt(int64(*botInfo.ApproximateGuildCount), 10), false)
-		if _, err := event.Client().Rest().UpdateInteractionResponse(event.ApplicationID(), event.Token(), discord.MessageUpdate{Embeds: &[]discord.Embed{embed.Build()}}); err != nil {
+		if _, err := event.Client().Rest.UpdateInteractionResponse(event.ApplicationID(), event.Token(), discord.MessageUpdate{Embeds: &[]discord.Embed{embed.Build()}}); err != nil {
 			slog.Error("Failed to update ping embed: ", slog.Any("err", err))
 		}
 	}()
 
-	if err := event.CreateMessage(discord.NewMessageCreateBuilder().SetEmbeds(embed.Build()).SetEphemeral(true).Build()); err != nil {
+	if err := event.CreateMessage(discord.NewMessageCreate().WithEmbeds(embed.Build()).WithEphemeral(true)); err != nil {
 		slog.Error("Error responding to interaction", slog.Any("err", err))
 	}
 }
