@@ -6,7 +6,7 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
-	"github.com/disgoorg/json"
+	"github.com/disgoorg/omit"
 	"github.com/gooberspace/goobcontrol/internal/common"
 	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
 )
@@ -14,7 +14,7 @@ import (
 var BanCommand = discord.SlashCommandCreate{
 	Name:                     "ban",
 	Description:              "Ban a member",
-	DefaultMemberPermissions: json.NewNullablePtr(discord.PermissionAdministrator),
+	DefaultMemberPermissions: omit.NewPtr(discord.PermissionAdministrator),
 	Contexts:                 []discord.InteractionContextType{discord.InteractionContextTypeGuild},
 	Options: []discord.ApplicationCommandOption{
 		discord.ApplicationCommandOptionUser{
@@ -41,7 +41,7 @@ func handleBan(gc *goobcontrol.GoobControl, event *events.ApplicationCommandInte
 	embed := checkDurationValidityAndBan(gc, event)
 
 	if err := event.CreateMessage(
-		discord.NewMessageCreateBuilder().AddEmbeds(embed.Build()).Build(),
+		discord.NewMessageCreate().AddEmbeds(embed.Build()),
 	); err != nil {
 		slog.Error("Error responding to interaction", slog.Any("err", err))
 	}
@@ -72,7 +72,7 @@ func checkDurationValidityAndBan(gc *goobcontrol.GoobControl, event *events.Appl
 			SetDescription("Parsed purge duration correctly but it's more than 604800 seconds. Please pick a lower duration")
 	}
 
-	if event.Client().Rest().AddBan(*event.GuildID(), user.User.ID, parsedDuration) != nil {
+	if event.Client().Rest.AddBan(*event.GuildID(), user.User.ID, parsedDuration) != nil {
 		return discord.NewEmbedBuilder().
 			SetTitle("Error banning member").
 			SetDescriptionf("Couldn't ban %s, check if the user is still in the server, if %s has enough permissions to ban them and if its role is above the targeted user.", user.EffectiveName(), gc.Config.GetString("bot.name")).

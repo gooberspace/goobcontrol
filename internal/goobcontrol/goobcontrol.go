@@ -29,7 +29,7 @@ func New(logger *slog.Logger, config *viper.Viper, version string, commandHandle
 }
 
 type GoobControl struct {
-	Client         bot.Client
+	Client         *bot.Client
 	Logger         *slog.Logger
 	Config         *viper.Viper
 	Version        string
@@ -58,12 +58,12 @@ func (gc *GoobControl) SetupBot() {
 }
 
 func (gc *GoobControl) RegisterCommands(publicCommands []discord.ApplicationCommandCreate, privateCommands []discord.ApplicationCommandCreate, privateGuilds []string) {
-	if _, err := gc.Client.Rest().SetGlobalCommands(gc.Client.ApplicationID(), publicCommands); err != nil {
+	if _, err := gc.Client.Rest.SetGlobalCommands(gc.Client.ApplicationID, publicCommands); err != nil {
 		slog.Error("error while registering commands", slog.Any("err", err))
 	}
 
 	for _, g := range privateGuilds {
-		if _, err := gc.Client.Rest().SetGuildCommands(gc.Client.ApplicationID(), snowflake.MustParse(g), privateCommands); err != nil {
+		if _, err := gc.Client.Rest.SetGuildCommands(gc.Client.ApplicationID, snowflake.MustParse(g), privateCommands); err != nil {
 			slog.Error("error while registering commands", slog.Any("err", err))
 		}
 	}
@@ -88,7 +88,7 @@ func (gc *GoobControl) HandleDiscordEvent(e bot.Event) {
 }
 
 func guildsReadyMessage(gc *GoobControl, e *events.GuildsReady) {
-	guilds, error := e.Client().Rest().GetCurrentUserGuilds("", 0, 0, 10, false)
+	guilds, error := e.Client().Rest.GetCurrentUserGuilds("", 0, 0, 10, false)
 	if error != nil {
 		gc.Logger.Error("Error getting guilds")
 	} else {
