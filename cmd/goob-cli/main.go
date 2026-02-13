@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gooberspace/goobcontrol/internal/goobcontrol"
+	"github.com/uptrace/bun/migrate"
 	"github.com/urfave/cli/v3"
 )
 
@@ -40,7 +41,7 @@ func createMigration(ctx context.Context, c *cli.Command) error {
 	config := goobcontrol.CreateConfig()
 	db := goobcontrol.SetupDatabase(config)
 	migrator := goobcontrol.SetupDbMigrator(db)
-	mf, err := migrator.CreateGoMigration(ctx, name)
+	mf, err := migrator.CreateGoMigration(ctx, name, migrate.WithPackageName("migrationfiles"))
 	if err != nil {
 		return err
 	}

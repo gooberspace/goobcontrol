@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/gooberspace/goobcontrol/migrations"
+	"github.com/gooberspace/goobcontrol/internal/migrations"
 	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
