@@ -6,13 +6,13 @@ import (
 	"github.com/uptrace/bun/migrate"
 )
 
-var Migrations = migrate.NewMigrations(migrate.WithMigrationsDirectory("/migrations"))
+var Migrations = migrate.NewMigrations()
 
 //go:embed migrations/*
-var migrations embed.FS
+var migrationsFS embed.FS
 
 func init() {
-	if err := Migrations.Discover(migrations); err != nil {
+	if err := Migrations.Discover(migrationsFS); err != nil {
 		panic(err)
 	}
 }

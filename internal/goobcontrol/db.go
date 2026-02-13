@@ -41,7 +41,8 @@ func (gc *GoobControl) TestDatabase() error {
 }
 
 func SetupDbMigrator(db *bun.DB) *migrate.Migrator {
-	return migrate.NewMigrator(db, migrations.Migrations)
+	migrator := migrate.NewMigrator(db, migrations.Migrations)
+	return migrator
 }
 
 func (gc *GoobControl) RunDbMigrations() error {
