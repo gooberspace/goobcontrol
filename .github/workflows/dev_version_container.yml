@@ -3,7 +3,7 @@ name: Build container for development versions
 on:
     push:
       branches:
-        '*'
+        'main'
 
 env:
   REGISTRY: ghcr.io
@@ -25,6 +25,8 @@ jobs:
 
                 - name: Connect container registry
                   uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+                  env:
+                    DOCKER_CONFIG: /tmp/.docker
                   with:
                     registry: ${{env.REGISTRY}}
                     username: ${{ github.actor }}
